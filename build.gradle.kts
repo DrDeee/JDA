@@ -259,26 +259,19 @@ test.apply {
 }
 
 publishing {
-    publications {
-        create<MavenPublication>("S3Release") {
-            from(components["java"])
-
-            artifactId = archivesBaseName
-            groupId = project.group as String
-            version = project.version as String
-
-            artifact(javadocJar)
-            artifact(sourcesJar)
-
-            repositories {
-                maven {
-                    url = uri(s3PublishingUrl)
-                    credentials(AwsCredentials::class) {
-                        accessKey = getProjectProperty("awsAccessKey")
-                        secretKey = getProjectProperty("awsSecretKey")
-                    }
-                }
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/DrDeee/JDA")
+            credentials {
+                username = "DrDeee"
+                password = project.findProperty("gpr.key") as String? ?: System.getenv("GITHUB_TOKEN")
             }
+        }
+    }
+    publications {
+        register<MavenPublication>("gpr") {
+            from(components["java"])
         }
     }
 }
