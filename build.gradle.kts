@@ -35,8 +35,6 @@ project.group = "net.dv8tion"
 project.version = "$versionObj"
 val archivesBaseName = "JDA"
 
-val s3PublishingUrl = "s3://m2.dv8tion.net/releases"
-
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8
@@ -54,7 +52,6 @@ configure<SourceSetContainer> {
 repositories {
     mavenLocal()
     mavenCentral()
-    maven("https://m2.dv8tion.net/releases")
 }
 
 dependencies {
@@ -274,17 +271,6 @@ publishing {
             from(components["java"])
         }
     }
-}
-
-val publishS3ReleasePublicationToMavenRepository: Task by tasks
-publishS3ReleasePublicationToMavenRepository.apply {
-    onlyIf { getProjectProperty("awsAccessKey").isNotEmpty() }
-    onlyIf { getProjectProperty("awsSecretKey").isNotEmpty() }
-    onlyIf { System.getenv("BUILD_NUMBER") != null }
-
-    dependsOn(clean)
-    dependsOn(build)
-    build.mustRunAfter(clean)
 }
 
 fun getProjectProperty(propertyName: String): String {
